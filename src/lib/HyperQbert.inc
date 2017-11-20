@@ -645,10 +645,14 @@ module drawScrewHole(h=smallSize)
 
 
 module drawAluScrewHole(h=smallSize)
-{
+{	
     translate([0,0,-h/2]) cylinder(h, rAluScrew, rAluScrew);
-}
+}	
 
+module drawAluScrewHeadMask(h=smallSize)
+{	
+    translate([0,0,-h/2]) cylinder(h, rAluScrewHead, rAluScrewHead);
+}	
 
 module drawAluScrewSlotHole(h=smallSize)
 {
@@ -666,7 +670,6 @@ module drawAluOpenScrewHole(h=smallSize)
     translate([0,0,-h/2]) cylinder(h, rAluScrew, rAluScrew);
     translate([0,smallSize/2,0]) cube([2*rAluScrew,smallSize,h], true);
 }
-
 
 module drawAluHammerNutHole(h=smallSize)
 {
@@ -1099,6 +1102,9 @@ module drawZCarriage(prmExtraArmLength = availableExtraLengthZCarriage)
 	    translate([distZCarriageHoles/2+extraArmLength,0,hZCarriage/2]) drawAluScrewHole(hZCarriage+2*eps);
 	    translate([distZCarriageHoles/2,0,hZCarriage/2]) drawAluScrewHole(hZCarriage+2*eps);
 	    translate([-distZCarriageHoles/2,0,hZCarriage/2]) drawAluScrewHole(hZCarriage+2*eps);
+	    translate([distZCarriageHoles/2+extraArmLength,0,tPlastic+(hZCarriage-tPlastic+eps)/2]) drawAluScrewHeadMask(hZCarriage-tPlastic+eps);
+	    translate([distZCarriageHoles/2,0,tPlastic+(hZCarriage-tPlastic+eps)/2]) drawAluScrewHeadMask(hZCarriage-tPlastic+eps);
+	    translate([-distZCarriageHoles/2,0,tPlastic+(hZCarriage-tPlastic+eps)/2]) drawAluScrewHeadMask(hZCarriage-tPlastic+eps);
 	}
     }
 }

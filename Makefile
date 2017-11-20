@@ -21,7 +21,7 @@ include $(wildcard $(SRCDIR)/*.deps)
 
 all: $(STL_TARGETS)
 
-gcode: $(GCODE_TARGETS)
+gcodefiles: $(GCODE_TARGETS)
 
 $(STLDIR):
 	mkdir -p ${STLDIR}
@@ -30,11 +30,10 @@ $(GCODEDIR):
 	mkdir -p ${GCODEDIR}
 
 $(STLDIR)/%.stl: $(SRCDIR)/%.scad $(SRCDIR)/lib/* $(STLDIR)
-	echo Match: $<
 	openscad -o $@ -d $<.deps $<
 
-$(GCODEDIR)/%.gcode: $(STLDIR)/%.stl ${CONFDIR}/basic.ini $(GCODEDIR)
-	${SLIC3R} --load ${CONFDIR}/basic.ini $<
+$(GCODEDIR)/%.gcode: $(STLDIR)/%.stl ${CONFDIR}/PrinterParts.ini $(GCODEDIR)
+	${SLIC3R} -o $@ --load ${CONFDIR}/PrinterParts.ini $<
 
 clean:
 	rm -rf ${STLDIR} ${GCODEDIR}
