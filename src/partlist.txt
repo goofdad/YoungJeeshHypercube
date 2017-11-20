@@ -1,0 +1,14 @@
+drawZCarriage(45);
+rotate([90,0,0]) drawZCarriageClamp();
+drawZRodMount();
+drawYRodMount();
+drawYCarriage();
+drawYCarriageTopPart();
+rotate([90,0,0]) drawYCarriageClamp();
+drawXYIdler();
+rotate([180,0,0]) drawXYMotorMountLeft();
+rotate([180,0,0]) drawXYMotorMountRight();
+rotate([180,0,0]) drawXCarriage();
+rotate([90,0,0]) drawXCarriageClamp();
+rotate([180,0,0]) drawXCarriageBeltClamp();
+drawTripleCornerPiecePrintable();
