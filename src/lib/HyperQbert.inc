@@ -83,6 +83,7 @@ clearanceFixedPartsSmall = 0.5;
 clearanceFloor = USE_PROJUNK_PREFS ? 45.0 : 10.0;
 clearanceYRod = 1.0;
 clearanceXRod = wAlu1/4;
+clearanceZBearing = 1.0;
 clearanceBearing = 2.0;
 clearanceFlangeBearing = 0.3;
 clearanceBelt = 3.0;
@@ -216,7 +217,7 @@ maxBuildHeight = 300.0;
 
 // handy distance variables (part1)
 distanceLeadScrewToAluProfile = distZCarriageHoles/2+rZCarriage+clearanceMovingParts;
-//echo("distanceLeadScrewToAluProfile",distanceLeadScrewToAluProfile);
+echo("distanceLeadScrewToAluProfile",distanceLeadScrewToAluProfile);
 distanceFloorToTopAluProfile = clearanceFloor + getHNema(motorZ);
 
 
@@ -1194,6 +1195,30 @@ module drawZMotorMountPlate()
 }
 
 
+module drawZMotorMountIdler()
+{
+    color(colorPlastic)
+    difference() {
+	rScrew = getRFlangeBearingInner(smallFB);
+	screwFlesh = calcScrewFleshSmallFB()/2;
+	R = rScrew+screwFlesh;
+	union() {
+	    hull(){
+		translate([0,R,0]) cylinder(wAlu1+tZMotorMount,R,R,$fn=100);
+		translate([-wAlu1,tZMotorMount/2,0]) cylinder(wAlu1+tZMotorMount,tZMotorMount/2,tZMotorMount/2);
+	    }
+	}
+	union() {
+	    h = getHeightFlangeBearing(smallFB)+correction_FlangeBearingLength;
+	    r = getRFlangeBearing(smallFB)+clearanceBearing+eps;
+	    translate([0,R,(wAlu1+tZMotorMount+2*eps)/2]) drawFlangeBearingScrewHole(smallFB, wAlu1+tZMotorMount+2*eps);
+	    translate([0,R,(wAlu1+tZMotorMount+2*eps)/2]) drawFlangeBearingHole(smallFB);
+	}
+
+    }
+}
+
+
 module drawZMotorMount()
 {
     color(colorPlastic)
@@ -1201,23 +1226,32 @@ module drawZMotorMount()
     {
 	union()
 	{
+	    b = getW1Nema(motorZ)/2 + distanceLeadScrewToAluProfile - tZMotorMount + eps;
 	    translate([-wZMotorMount1/2,-getW1Nema(motorZ)/2,0]) cube([wZMotorMount1,lZMotorMount1+eps,tZMotorMount]);
+	    translate([-wZMotorMount1/2,-getW1Nema(motorZ)/2,wAlu1]) cube([wZMotorMount1,lZMotorMount1+eps,tZMotorMount]);
 	    translate([-wZMotorMount2/2,distanceLeadScrewToAluProfile-tZMotorMount,0]) cube([wZMotorMount2,lZMotorMount2,tZMotorMount]);
 	    translate([-wZMotorMount2/2,distanceLeadScrewToAluProfile-tZMotorMount,tZMotorMount-eps]) cube([wZMotorMount2,tZMotorMount,wAlu1+eps]);
-	    translate([wZMotorMount1/2-tZMotorMount/2,-getW1Nema(motorZ)/2,tZMotorMount]) drawZMotorMountPlate();
-	    translate([-wZMotorMount1/2+tZMotorMount/2,-getW1Nema(motorZ)/2,tZMotorMount]) drawZMotorMountPlate();
+	    translate([wZMotorMount1/2-tZMotorMount,-getW1Nema(motorZ)/2,tZMotorMount]) cube([tZMotorMount,b,wAlu1+eps]);
+	    translate([-wZMotorMount1/2,-getW1Nema(motorZ)/2,tZMotorMount]) cube([tZMotorMount,b,wAlu1+eps]);
+	    translate([-wZMotorMount1/2,-wZMotorMount1/2-tZMotorMount,0]) rotate([0,0,-90]) drawZMotorMountIdler();
+	    mirror([1,0,0]) translate([-wZMotorMount1/2,-wZMotorMount1/2-tZMotorMount,0]) rotate([0,0,-90]) drawZMotorMountIdler();
 	}
 	union()
 	{
 	    hull() {
-		translate([0,getWScrewSlotNema(motorZ)/2,-eps]) cylinder(tZMotorMount+2*eps,rZMotorMountNema,rZMotorMountNema,$fn=200);
-		translate([0,-getWScrewSlotNema(motorZ)/2,-eps]) cylinder(tZMotorMount+2*eps,rZMotorMountNema,rZMotorMountNema,$fn=200);
+		translate([0,getWScrewSlotNema(motorZ)/2,-eps]) cylinder(2*wAlu1,rZMotorMountNema,rZMotorMountNema,$fn=200);
+		translate([0,-getWScrewSlotNema(motorZ)/2,-eps]) cylinder(2*wAlu1,rZMotorMountNema,rZMotorMountNema,$fn=200);
 	    }
 	    offsetHole = getDistScrewHolesNema(motorZ)/2;
-	    translate([offsetHole,offsetHole,tZMotorMount/2]) drawNemaScrewSlotHole(motorZ,tZMotorMount+2*eps);
-	    translate([-offsetHole,offsetHole,tZMotorMount/2]) drawNemaScrewSlotHole(motorZ,tZMotorMount+2*eps);
-	    translate([offsetHole,-offsetHole,tZMotorMount/2]) drawNemaScrewSlotHole(motorZ,tZMotorMount+2*eps);
-	    translate([-offsetHole,-offsetHole,tZMotorMount/2]) drawNemaScrewSlotHole(motorZ,tZMotorMount+2*eps);
+	    translate([offsetHole,offsetHole,wAlu1+tZMotorMount/2]) drawNemaScrewSlotHole(motorZ,tZMotorMount+2*eps);
+	    translate([-offsetHole,offsetHole,wAlu1+tZMotorMount/2]) drawNemaScrewSlotHole(motorZ,tZMotorMount+2*eps);
+	    translate([offsetHole,-offsetHole,wAlu1+tZMotorMount/2]) drawNemaScrewSlotHole(motorZ,tZMotorMount+2*eps);
+	    translate([-offsetHole,-offsetHole,wAlu1+tZMotorMount/2]) drawNemaScrewSlotHole(motorZ,tZMotorMount+2*eps);
+
+	    translate([offsetHole,offsetHole,tZMotorMount/2]) drawAluScrewHeadMask(tZMotorMount+2*eps);
+	    translate([-offsetHole,offsetHole,tZMotorMount/2]) drawAluScrewHeadMask(tZMotorMount+2*eps);
+	    translate([offsetHole,-offsetHole,tZMotorMount/2]) drawAluScrewHeadMask(tZMotorMount+2*eps);
+	    translate([-offsetHole,-offsetHole,tZMotorMount/2]) drawAluScrewHeadMask(tZMotorMount+2*eps);
 
 	    if (useHammerNuts) {
 		translate([distZMotorMountHoles/2,distanceLeadScrewToAluProfile+wAlu1/2,0]) rotate([0,0,-90]) drawAluOpenScrewHole();
@@ -1230,6 +1264,64 @@ module drawZMotorMount()
 	    }
 	    translate([distZMotorMountHoles/2,distanceLeadScrewToAluProfile,tZMotorMount+wAlu1/2]) rotate([90,0,0]) drawAluScrewHole();
 	    translate([-distZMotorMountHoles/2,distanceLeadScrewToAluProfile,tZMotorMount+wAlu1/2]) rotate([90,0,0]) drawAluScrewHole();
+	}
+    }
+}
+
+
+module drawZIdlerMount()
+{
+
+    hZIdlerMount = wAlu1 + tZMotorMount * 2 + (rNut + correction_NutRadius) * 4 + clearanceZBearing * 4;
+    wZIdlerBearingScrewHoles = 42;
+    wZIdlerMount = wZIdlerBearingScrewHoles + (rNut + correction_NutRadius) * 2 + clearanceZBearing * 4;
+    distanceZBearingToCenter = 15;
+    offsetZMountHole = wZIdlerMount - wZIdlerBearingScrewHoles;
+
+    color(colorPlastic) rotate([0,-90,0])
+    difference()
+    {
+	union()
+	{
+	    translate([0,distanceLeadScrewToAluProfile - tZMotorMount, (rNut + correction_NutRadius) * 2 + clearanceZBearing * 2]) cube ([wZIdlerMount, tZMotorMount, wAlu1 + tZMotorMount * 2]);
+	    translate([0,distanceLeadScrewToAluProfile - tZMotorMount, (rNut + correction_NutRadius) * 2 + clearanceZBearing * 2]) cube ([wZIdlerMount, wAlu1 + tZMotorMount, tZMotorMount]);
+	    translate([0,distanceZBearingToCenter, (rNut + correction_NutRadius) * 2 + clearanceZBearing * 2]) cube ([wZIdlerMount, distanceLeadScrewToAluProfile - distanceZBearingToCenter, tZMotorMount]);
+	    translate([0,distanceZBearingToCenter,(rNut + correction_NutRadius) * 2 + clearanceZBearing * 2]) cube ([tZMotorMount, distanceLeadScrewToAluProfile - distanceZBearingToCenter, wAlu1 + tZMotorMount*2]);
+	    translate([wZIdlerMount - tZMotorMount,distanceZBearingToCenter,(rNut + correction_NutRadius) * 2 + clearanceZBearing * 2]) cube ([tZMotorMount, distanceLeadScrewToAluProfile - distanceZBearingToCenter, wAlu1 + tZMotorMount*2]);
+	    translate([(wZIdlerMount - tZMotorMount) / 2,distanceZBearingToCenter,(rNut + correction_NutRadius) * 2 + clearanceZBearing * 2]) cube ([tZMotorMount, distanceLeadScrewToAluProfile - distanceZBearingToCenter, wAlu1 + tZMotorMount*2]);
+
+	    translate([0,distanceZBearingToCenter, (rNut + correction_NutRadius) * 2 + clearanceZBearing * 2 + tZMotorMount + wAlu1]) cube ([wZIdlerMount, distanceLeadScrewToAluProfile - distanceZBearingToCenter, tZMotorMount]);
+	    translate([0,distanceZBearingToCenter,(rNut + correction_NutRadius) * 2 + clearanceZBearing * 2 + tZMotorMount + wAlu1]) cube ([wZIdlerMount, tZMotorMount, (rNut + correction_NutRadius) * 2 + clearanceZBearing * 2 + tZMotorMount]);
+	    translate([0,distanceZBearingToCenter,0]) cube ([wZIdlerMount, tZMotorMount, (rNut + correction_NutRadius) * 2 + clearanceZBearing * 2+tZMotorMount]);
+	    // distanceLeadScrewToAluProfile-distanceZBearingToCenter
+	}
+	union() {
+	    translate([wZIdlerMount-offsetZMountHole,0,0]) union()
+	    {			
+		if (useHammerNuts) {
+		    translate([0,distanceLeadScrewToAluProfile+wAlu1/2,(rNut + correction_NutRadius) * 2 + clearanceZBearing * 2]) rotate([0,0,90]) drawAluHammerNutHole();
+		} else {
+		    translate([0,distanceLeadScrewToAluProfile+wAlu1/2,(rNut + correction_NutRadius) * 2 + clearanceZBearing * 2+50]) drawAluScrewHole();
+		}
+		translate([0,distanceLeadScrewToAluProfile,(rNut + correction_NutRadius) * 2 + clearanceZBearing * 2 + tZMotorMount + wAlu1/2]) rotate([90,0,0]) drawAluScrewHole();
+		translate([0,distanceZBearingToCenter + tZMotorMount,rNut + correction_NutRadius + clearanceZBearing]) rotate([90,30,0]) drawNutMask();
+		translate([0,distanceZBearingToCenter + tZMotorMount,rNut + correction_NutRadius + clearanceZBearing]) rotate([90,30,0]) drawScrewHole();
+		translate([0,distanceZBearingToCenter + tZMotorMount,hZIdlerMount - (rNut + correction_NutRadius + clearanceZBearing)]) rotate([90,30,0]) drawNutMask();
+		translate([0,distanceZBearingToCenter + tZMotorMount,hZIdlerMount - (rNut + correction_NutRadius + clearanceZBearing)]) rotate([90,30,0]) drawScrewHole();
+	    }
+	    translate([offsetZMountHole,0,0])  union()
+	    {			
+		if (useHammerNuts) {
+		    translate([0,distanceLeadScrewToAluProfile+wAlu1/2,(rNut + correction_NutRadius) * 2 + clearanceZBearing * 2]) rotate([0,0,90]) drawAluHammerNutHole();
+		} else {
+		    translate([0,distanceLeadScrewToAluProfile+wAlu1/2,(rNut + correction_NutRadius) * 2 + clearanceZBearing * 2+50]) drawAluScrewHole();
+		}
+		translate([0,distanceLeadScrewToAluProfile,(rNut + correction_NutRadius) * 2 + clearanceZBearing * 2 + tZMotorMount + wAlu1/2]) rotate([90,0,0]) drawAluScrewHole();
+		translate([0,distanceZBearingToCenter + tZMotorMount,rNut + correction_NutRadius + clearanceZBearing]) rotate([90,30,0]) drawNutMask();
+		translate([0,distanceZBearingToCenter + tZMotorMount,rNut + correction_NutRadius + clearanceZBearing]) rotate([90,30,0]) drawScrewHole();
+		translate([0,distanceZBearingToCenter + tZMotorMount,hZIdlerMount - (rNut + correction_NutRadius + clearanceZBearing)]) rotate([90,30,0]) drawNutMask();
+		translate([0,distanceZBearingToCenter + tZMotorMount,hZIdlerMount - (rNut + correction_NutRadius + clearanceZBearing)]) rotate([90,30,0]) drawScrewHole();
+	    }
 	}
     }
 }
@@ -1306,6 +1398,59 @@ module drawZRodMount()
 	    translate([-wZRodMount/2-eps,offsetCutX,-eps]) cube([cutDepthZRodMount+eps,cutWidthZRodMount,tZRodMountThick+2*eps]);	
 	    translate([-cutWidthZRodMount-wZRodMount/2+cutDepthZRodMount,0,-eps]) cube([cutWidthZRodMount,offsetCutX+cutWidthZRodMount,tZRodMountThick+2*eps]);	
 	    translate([0,offsetCutX-rScrew-calcScrewFlesh(rScrew)/2,tZRodMountThick/2]) rotate([0,90,0]) drawScrewHole();
+	}
+    }
+}
+
+
+function calcWouldBeFleshYRodMount() = distYRodToMidSideAluProfile+getRBearingInner(BearingY)+rScrew+calcScrewFlesh(rScrew)/2-wYRodMount/2-rScrew;
+
+function calcExtraDistanceYRodMount() = (calcWouldBeFleshYRodMount() >= calcScrewFlesh(rScrew)/2) ? 0 : calcScrewFlesh(rScrew)/2 - calcWouldBeFleshYRodMount();
+
+
+module drawYRodMount(isMaskMode = false)
+{
+    wouldBeFlesh = distYRodToMidSideAluProfile+getRBearingInner(BearingY)+rScrew+calcScrewFlesh(rScrew)/2-wYRodMount/2-rScrew;
+    extraDistanceX = calcExtraDistanceYRodMount();
+    tScrewClearance = tWasher+tNut+clearanceScrew;
+
+    color(colorPlastic)
+    difference()
+    {
+	union()
+	{
+	    hull() {
+		translate([0,distYRodMountHoles/2,0]) cylinder(tYRodMount,wYRodMount/2,wYRodMount/2, $fn=100);
+		translate([0,-distYRodMountHoles/2,0]) cylinder(tYRodMount,wYRodMount/2,wYRodMount/2, $fn=100);
+		if (isMaskMode) {
+		    translate([-smallSize,distYRodMountHoles/2+smallSize,0]) cylinder(tYRodMount,wYRodMount/2,wYRodMount/2, $fn=100);
+		    translate([-smallSize,-distYRodMountHoles/2-smallSize,0]) cylinder(tYRodMount,wYRodMount/2,wYRodMount/2, $fn=100);
+		}
+	    }
+	    translate([distYRodToMidSideAluProfile,0,0]) {
+		cylinder(tYRodMountThick,rYRodMount,rYRodMount, $fn=100);
+		translate([0,-rYRodMount,0]) cube([getRBearingInner(BearingY)+2*rScrew+calcScrewFlesh(rScrew)+extraDistanceX,2*rYRodMount,tYRodMountThick]);
+	    }
+	    if (isMaskMode) {
+		translate([-smallSize,-(distYRodMountHoles+wYRodMount)/2,0]) cube([smallSize,distYRodMountHoles+wYRodMount,tYRodMount]);
+		hull() {
+		    translate([0,distYRodMountHoles/2,tYRodMount-eps]) cylinder(tScrewClearance+eps, rWasherOuter,rWasherOuter);
+		    translate([0,-distYRodMountHoles/2,tYRodMount-eps]) cylinder(tScrewClearance+eps, rWasherOuter,rWasherOuter);
+		}
+		translate([0,-rYRodMount-tScrewClearance,0]) cube([distYRodToMidSideAluProfile+getRBearingInner(BearingY)+2*rScrew+calcScrewFlesh(rScrew)+extraDistanceX,2*rYRodMount+2*tScrewClearance,tYRodMountThick]);
+	    }
+	}
+	union()
+	{
+	    if (!isMaskMode) {
+		translate([0,distYRodMountHoles/2,tYRodMount/2]) drawAluScrewSlotHole(tYRodMount+2*eps);
+		translate([0,-distYRodMountHoles/2,tYRodMount/2]) drawAluScrewSlotHole(tYRodMount+2*eps);
+		translate([distYRodToMidSideAluProfile,0,0]) {
+		    translate([0,0,-eps]) cylinder(tYRodMountThick+2*eps,getRBearingInner(BearingY),getRBearingInner(BearingY),$fn=50);
+		    translate([0,-cutWidthYRodMount/2,-eps]) cube([smallSize,cutWidthYRodMount,tYRodMountThick+2*eps]);	
+		    translate([getRBearingInner(BearingY)+rScrew+calcScrewFlesh(rScrew)/2+extraDistanceX,0,tYRodMountThick/2]) rotate([90,0,0]) drawScrewHole();
+		}
+	    }
 	}
     }
 }
@@ -1799,6 +1944,46 @@ module drawXCarriageBeltClamp()
     }
 }
 
+module drawXCarriageBeltTensioner()
+{
+    color(colorPlastic)
+    difference()
+    {
+	union()
+	{
+	    w = distYCarriageCenterFlangeBearingToCenterFlangeBearing + wBelt + 2*clearanceBeltSmall + 4*rScrew + 2*calcScrewFlesh(rScrew);
+	    translate([0,0,tXCarriageBeltClamp]) cube([w,wXCarriageBeltClamp,2*tXCarriageBeltClamp],true);
+	}
+	union()
+	{
+	    offsetX = distYCarriageCenterFlangeBearingToCenterFlangeBearing/2 + wBelt/2 + clearanceBeltSmall + rScrew + calcScrewFlesh(rScrew)/2;
+	    translate([-offsetX,0,0]) drawScrewHole();
+	    drawScrewHole();
+	    translate([offsetX,0,0]) drawScrewHole();
+	    translate([offsetX/2,wXCarriageBeltClampImprintCorrected/2,0]) drawXCarriageBeltMask();
+	    translate([offsetX/2,0,3*tXCarriageBeltClamp-2.5]) cube([wBelt+2*clearanceBeltSmall,10,10], true);
+	    translate([-offsetX/2,0,3*tXCarriageBeltClamp-2.5]) cube([wBelt+2*clearanceBeltSmall,10,10], true);
+	    translate([-offsetX/2,-wXCarriageBeltClamp/2+tNut-eps,tXCarriageBeltClamp]) rotate([90,0,0]) rotate([0,0,30]) drawNutMask();
+	    translate([-offsetX/2,-wXCarriageBeltClamp/2+tNut-eps,tXCarriageBeltClamp]) rotate([90,0,0]) rotate([0,0,30]) drawScrewHole();
+	    translate([offsetX/2,-wXCarriageBeltClamp/2+tNut-eps,tXCarriageBeltClamp]) rotate([90,0,0]) drawNutMask();
+	    translate([offsetX/2,-wXCarriageBeltClamp/2+tNut-eps,tXCarriageBeltClamp]) rotate([90,0,0]) drawScrewHole();
+	}
+    }
+    translate ([2,-wXCarriageBeltClamp,0]) drawXCarriageTensionerIdler();
+    translate ([-5-wBelt+2*clearanceBeltSmall,-wXCarriageBeltClamp,0]) drawXCarriageTensionerIdler();
+}
+
+module drawXCarriageTensionerIdler() {
+    difference() {
+	union() {
+	    translate ([0,-tPlastic,tPlastic/2]) rotate([0,90,0]) cylinder(wBelt+2*clearanceBeltSmall,tPlastic/2,tPlastic/2);
+	    translate ([0,-tPlastic,0]) cube([wBelt+2*clearanceBeltSmall,tPlastic,tPlastic]);
+	}
+	union() {
+	    translate([(wBelt+2*clearanceBeltSmall)/2,0,tPlastic/2]) rotate([90,0,0]) drawScrewHole(tPlastic*2);
+	}
+    }
+}
 
 module drawXEndstopMount()
 {

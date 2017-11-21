@@ -1,3 +1,3 @@
 include <lib/HyperQbert.inc>
-drawYCarriage();
+for (i=[0:1]) translate([0,70*i,0]) drawYCarriage();
 
