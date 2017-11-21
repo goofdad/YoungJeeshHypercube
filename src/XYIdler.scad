@@ -1,3 +1,3 @@
 include <lib/HyperQbert.inc>
-drawXYIdler();
+for (i=[0:1]) translate([24*i,0,0]) drawXYIdler();
 
