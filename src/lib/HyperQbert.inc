@@ -217,7 +217,7 @@ maxBuildHeight = 300.0;
 
 // handy distance variables (part1)
 distanceLeadScrewToAluProfile = distZCarriageHoles/2+rZCarriage+clearanceMovingParts;
-echo("distanceLeadScrewToAluProfile",distanceLeadScrewToAluProfile);
+//echo("distanceLeadScrewToAluProfile",distanceLeadScrewToAluProfile);
 distanceFloorToTopAluProfile = clearanceFloor + getHNema(motorZ);
 
 

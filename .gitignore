@@ -1,3 +1,4 @@
 *.stl
+!src/*.stl
 *.gcode
 *.deps
